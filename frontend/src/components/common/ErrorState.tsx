@@ -15,40 +15,40 @@ export type ErrorStateReason =
 const REASON_CONTENT: Record<ErrorStateReason, { icon: ReactNode; title: string; message: string }> = {
   "not-found": {
     icon: <Ghost className="size-6" />,
-    title: "Not bulunamadı",
+    title: "Note not found",
     message:
-      "Bu not artık mevcut değil. Daha önce görüntülenmiş, süresi dolmuş ya da bağlantı hatalı olabilir.",
+      "This note no longer exists. It may have already been viewed, expired, or the link may be incorrect.",
   },
   "rate-limited": {
     icon: <Clock className="size-6" />,
-    title: "Çok fazla istek",
-    message: "Kısa sürede çok fazla istek gönderildi. Lütfen biraz bekleyip tekrar deneyin.",
+    title: "Too many requests",
+    message: "Too many requests were sent in a short time. Please wait a moment and try again.",
   },
   "service-unavailable": {
     icon: <ServerCrash className="size-6" />,
-    title: "Servis şu anda kullanılamıyor",
-    message: "Sunucu geçici olarak yanıt veremiyor. Lütfen birazdan tekrar deneyin.",
+    title: "Service currently unavailable",
+    message: "The server is temporarily unable to respond. Please try again shortly.",
   },
   network: {
     icon: <WifiOff className="size-6" />,
-    title: "Bağlantı hatası",
-    message: "Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.",
+    title: "Connection error",
+    message: "Could not reach the server. Check your internet connection and try again.",
   },
   "missing-key": {
     icon: <AlertTriangle className="size-6" />,
-    title: "Bağlantı eksik",
+    title: "Incomplete link",
     message:
-      "Bu bağlantıda şifre çözme anahtarı bulunamadı. Linkin tamamını kopyaladığınızdan emin olun.",
+      "No decryption key was found in this link. Make sure you copied the entire link.",
   },
   "decrypt-failed": {
     icon: <KeyRound className="size-6" />,
-    title: "Not çözülemedi",
-    message: "Bu not bu bağlantıyla çözülemedi. Link hatalı ya da eksik kopyalanmış olabilir.",
+    title: "Note could not be decrypted",
+    message: "This note could not be decrypted with this link. The link may be incorrect or partially copied.",
   },
   unknown: {
     icon: <AlertTriangle className="size-6" />,
-    title: "Bir şeyler ters gitti",
-    message: "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.",
+    title: "Something went wrong",
+    message: "An unexpected error occurred. Please try again.",
   },
 };
 

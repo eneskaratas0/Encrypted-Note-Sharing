@@ -20,7 +20,7 @@ export function ShareResultCard({ share, onCopied, onCreateAnother }: ShareResul
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Paylaşım linkiniz hazır</CardTitle>
+        <CardTitle>Your share link is ready</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-1.5">
@@ -32,29 +32,29 @@ export function ShareResultCard({ share, onCopied, onCreateAnother }: ShareResul
             value={share.shareUrl}
             onFocus={(event) => event.currentTarget.select()}
             className="w-full rounded-lg border border-input bg-muted/40 px-2.5 py-2 font-mono text-xs select-all"
-            aria-label="Paylaşım linki"
+            aria-label="Share link"
           />
-          <CopyButton value={share.shareUrl} label="Linki kopyala" onCopied={onCopied} className="w-full" />
+          <CopyButton value={share.shareUrl} label="Copy link" onCopied={onCopied} className="w-full" />
         </div>
 
         <Alert variant="destructive">
           <AlertTriangle />
-          <AlertTitle>Bu linki yalnızca güvendiğiniz kişiyle paylaşın</AlertTitle>
+          <AlertTitle>Only share this link with someone you trust</AlertTitle>
           <AlertDescription>
-            Not en fazla{" "}
+            The note can be viewed at most{" "}
             <Badge variant="secondary" className="align-middle">
-              {share.maxViews} kez
+              {share.maxViews} time{share.maxViews > 1 ? "s" : ""}
             </Badge>{" "}
-            görüntülenebilir ve {formatExpiry(share.expiresAt)}
-            {relativeExpiry ? ` (${relativeExpiry})` : ""} tarihinde kalıcı olarak silinir. Linki
-              önizleme oluşturabilen sohbet/e-posta uygulamalarında paylaşmaktan kaçının.
+            and will be permanently deleted on {formatExpiry(share.expiresAt)}
+            {relativeExpiry ? ` (${relativeExpiry})` : ""}. Avoid sharing the link in
+              chat/email apps that generate link previews.
           </AlertDescription>
         </Alert>
 
-        <SecurityNotice text="Şifreleme anahtarı yalnızca bu linkte bulunur; sunucuya hiçbir zaman gönderilmedi ve saklanmadı." />
+        <SecurityNotice text="The encryption key exists only in this link; it was never sent to or stored on the server." />
 
         <Button type="button" variant="ghost" onClick={onCreateAnother} className="w-full">
-          Yeni not oluştur
+          Create new note
         </Button>
       </CardContent>
     </Card>

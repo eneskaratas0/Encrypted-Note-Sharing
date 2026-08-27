@@ -5,7 +5,7 @@ import { MAX_PAYLOAD_LENGTH, MAX_TTL_SECONDS, MAX_VIEWS_LIMIT } from "@/lib/cons
 export const composeSchema = z.object({
   note: z
     .string()
-    .min(1, "Not boş olamaz")
+    .min(1, "Note cannot be empty")
     .superRefine((value, ctx) => {
       // Must check UTF-8 byte length, not JS string length — multi-byte
       // characters would otherwise slip past a naive .length check.
@@ -14,7 +14,7 @@ export const composeSchema = z.object({
       if (estimatedPayloadLength > MAX_PAYLOAD_LENGTH) {
         ctx.addIssue({
           code: "custom",
-          message: "Not, şifrelendikten sonra izin verilen boyutu aşıyor",
+          message: "The note exceeds the allowed size once encrypted",
         });
       }
     }),

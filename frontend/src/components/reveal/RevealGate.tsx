@@ -17,20 +17,20 @@ export function RevealGate({ onReveal, pending }: RevealGateProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bu size gönderilen gizli bir not</CardTitle>
+        <CardTitle>This is a secret note sent to you</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <Alert>
           <ShieldAlert />
-          <AlertTitle>Yalnızca bir kez görüntüleyebilirsiniz</AlertTitle>
+          <AlertTitle>You can only view this once</AlertTitle>
           <AlertDescription>
-            Notu açtığınızda sunucudan kalıcı olarak silinir. Devam etmeden önce not içeriğini
-            kaydetmek isteyip istemediğinizi düşünün.
+            The note is permanently deleted from the server as soon as you open it. Consider
+            whether you want to save its contents before continuing.
           </AlertDescription>
         </Alert>
         <Button type="button" onClick={onReveal} disabled={pending} className="w-full gap-1.5">
           {pending ? <Loader2 className="size-4 animate-spin" /> : <Eye className="size-4" />}
-          Notu göster
+          Show note
         </Button>
       </CardContent>
     </Card>

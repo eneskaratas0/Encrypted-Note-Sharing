@@ -7,17 +7,17 @@ export function RevealedNote({ plaintext }: { plaintext: string }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Not içeriği</CardTitle>
+        <CardTitle>Note content</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <pre className="max-h-96 overflow-auto rounded-lg border border-input bg-muted/40 p-3 text-sm whitespace-pre-wrap">
           {plaintext}
         </pre>
-        <CopyButton value={plaintext} label="Not metnini kopyala" className="w-full" />
+        <CopyButton value={plaintext} label="Copy note text" className="w-full" />
         <Alert>
           <CheckCircle2 />
-          <AlertTitle>Bu not artık tekrar görüntülenemez</AlertTitle>
-          <AlertDescription>Kalıcı olarak silindi. İçeriği kaydetmek istiyorsanız şimdi kopyalayın.</AlertDescription>
+          <AlertTitle>This note can't be viewed again</AlertTitle>
+          <AlertDescription>It has been permanently deleted. Copy the content now if you want to keep it.</AlertDescription>
         </Alert>
       </CardContent>
     </Card>

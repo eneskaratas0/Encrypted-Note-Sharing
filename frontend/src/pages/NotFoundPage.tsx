@@ -11,11 +11,11 @@ export function NotFoundPage() {
           <Compass className="size-6" />
         </div>
         <div className="space-y-1">
-          <h1 className="font-heading text-base font-medium">Sayfa bulunamadı</h1>
-          <p className="text-sm text-muted-foreground">Aradığınız sayfa mevcut değil.</p>
+          <h1 className="font-heading text-base font-medium">Page not found</h1>
+          <p className="text-sm text-muted-foreground">The page you're looking for doesn't exist.</p>
         </div>
         <Button asChild variant="outline" className="mt-2">
-          <Link to="/">Ana sayfaya dön</Link>
+          <Link to="/">Back to home</Link>
         </Button>
       </CardContent>
     </Card>

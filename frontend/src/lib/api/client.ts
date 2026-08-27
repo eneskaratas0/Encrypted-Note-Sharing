@@ -19,12 +19,12 @@ export async function apiRequest<T>({ method, path, body }: RequestOptions): Pro
       credentials: "omit",
     });
   } catch {
-    throw new ApiError("network", null, "Sunucuya ulaşılamadı");
+    throw new ApiError("network", null, "Could not reach the server");
   }
 
   if (!response.ok) {
     const reason = mapStatusToReason(response.status);
-    let message = "Bilinmeyen bir hata oluştu";
+    let message = "An unknown error occurred";
     try {
       const data = (await response.json()) as { detail?: string };
       if (data.detail) message = data.detail;

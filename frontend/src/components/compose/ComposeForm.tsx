@@ -28,12 +28,12 @@ export interface CreatedShare {
 
 function errorToastMessage(error: unknown): string {
   if (error instanceof ApiError) {
-    if (error.reason === "rate-limited") return "Çok fazla istek gönderildi. Lütfen biraz bekleyip tekrar deneyin.";
-    if (error.reason === "service-unavailable") return "Sunucu şu anda kullanılamıyor. Lütfen tekrar deneyin.";
-    if (error.reason === "network") return "Sunucuya ulaşılamadı. Bağlantınızı kontrol edin.";
+    if (error.reason === "rate-limited") return "Too many requests were sent. Please wait a moment and try again.";
+    if (error.reason === "service-unavailable") return "The server is currently unavailable. Please try again.";
+    if (error.reason === "network") return "Could not reach the server. Check your connection.";
     return error.message;
   }
-  return "Not oluşturulurken bir hata oluştu.";
+  return "An error occurred while creating the note.";
 }
 
 export function ComposeForm({ onCreated }: { onCreated: (share: CreatedShare) => void }) {
@@ -82,11 +82,11 @@ export function ComposeForm({ onCreated }: { onCreated: (share: CreatedShare) =>
   return (
     <form onSubmit={(event) => void handleSubmit(onSubmit)(event)} className="space-y-5">
       <div className="space-y-1.5">
-        <Label htmlFor="note">Notunuz</Label>
+        <Label htmlFor="note">Your note</Label>
         <Textarea
           id="note"
           rows={8}
-          placeholder="Paylaşmak istediğiniz gizli metni buraya yazın..."
+          placeholder="Type the secret text you want to share here..."
           aria-invalid={Boolean(errors.note)}
           {...register("note")}
         />
@@ -101,7 +101,7 @@ export function ComposeForm({ onCreated }: { onCreated: (share: CreatedShare) =>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <Label htmlFor="ttl">Geçerlilik süresi</Label>
+          <Label htmlFor="ttl">Expiration</Label>
           <Controller
             control={control}
             name="ttlSeconds"
@@ -123,7 +123,7 @@ export function ComposeForm({ onCreated }: { onCreated: (share: CreatedShare) =>
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="max-views">Maksimum görüntüleme</Label>
+          <Label htmlFor="max-views">Maximum views</Label>
           <Controller
             control={control}
             name="maxViews"
@@ -135,7 +135,7 @@ export function ComposeForm({ onCreated }: { onCreated: (share: CreatedShare) =>
                 <SelectContent>
                   {MAX_VIEWS_PRESETS.map((count) => (
                     <SelectItem key={count} value={String(count)}>
-                      {count} kez
+                      {count} time{count > 1 ? "s" : ""}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -147,7 +147,7 @@ export function ComposeForm({ onCreated }: { onCreated: (share: CreatedShare) =>
 
       <Button type="submit" disabled={busy} className="w-full gap-1.5">
         {busy ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
-        Güvenli link oluştur
+        Create secure link
       </Button>
     </form>
   );

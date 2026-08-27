@@ -1,66 +1,66 @@
 # CLAUDE.md
 
-Bu dosya, bu depoda çalışırken Claude Code'a (claude.ai/code) rehberlik eder.
+This file guides Claude Code (claude.ai/code) when working in this repository.
 
-## Proje Özeti
+## Project Overview
 
-Encrypted Note Sharing: Kullanıcıların uçtan uca şifrelenmiş notlar oluşturup
-tek kullanımlık veya süreli linklerle paylaşabildiği bir FastAPI servisi.
-Sunucu, notların düz metin içeriğini asla görmez; şifreleme/çözme istemci
-tarafında yapılır, sunucu yalnızca şifreli veriyi saklar.
+Encrypted Note Sharing: A FastAPI service that lets users create end-to-end
+encrypted notes and share them via one-time or time-limited links. The
+server never sees the plaintext content of notes; encryption/decryption
+happens client-side, and the server only stores the encrypted data.
 
-## Teknoloji Yığını
+## Tech Stack
 
-- **FastAPI** — HTTP API katmanı
-- **Uvicorn** — ASGI sunucusu
-- **SQLAlchemy** (async) + **aiosqlite** — veritabanı erişimi (SQLite)
-- **Pydantic v2 / pydantic-settings** — veri doğrulama ve konfigürasyon
-- **pytest / httpx** — test
+- **FastAPI** — HTTP API layer
+- **Uvicorn** — ASGI server
+- **SQLAlchemy** (async) + **aiosqlite** — database access (SQLite)
+- **Pydantic v2 / pydantic-settings** — data validation and configuration
+- **pytest / httpx** — testing
 
-## Dizin Yapısı
+## Directory Structure
 
 ```
 app/
-  api/        # Route/endpoint tanımları (APIRouter'lar)
-  core/       # Konfigürasyon, güvenlik yardımcıları, ayarlar (Settings)
-  models/     # SQLAlchemy ORM modelleri
-  schemas/    # Pydantic request/response şemaları
-  services/   # İş mantığı (route'lardan çağrılan servis katmanı)
-tests/        # pytest test dosyaları
+  api/        # Route/endpoint definitions (APIRouters)
+  core/       # Configuration, security helpers, settings (Settings)
+  models/     # SQLAlchemy ORM models
+  schemas/    # Pydantic request/response schemas
+  services/   # Business logic (called from routes)
+tests/        # pytest test files
 requirements.txt
 ```
 
-## Mimari Kurallar
+## Architectural Rules
 
-- Route handler'lar (`app/api`) ince tutulur: doğrulama + servis çağrısı.
-  İş mantığı `app/services` içinde yaşar.
-- Veritabanı modelleri (`app/models`) ile dışa açılan API şemaları
-  (`app/schemas`) birbirinden ayrı tutulur; ORM nesneleri doğrudan
-  response olarak dönülmez.
-- Konfigürasyon `app/core/config.py` içinde `pydantic-settings` ile
-  ortam değişkenlerinden okunur; sabit değerler kod içine gömülmez.
-- Şifreleme/çözme mantığı sunucuda çalıştırılmaz — istemci, IV/nonce'u
-  da içeren ciphertext'i tek bir opak `encrypted_payload` string'i
-  olarak encode edip gönderir; sunucu bu blobu şeffaf biçimde saklar,
-  içeriğini asla ayrıştırmaz veya yorumlamaz.
+- Route handlers (`app/api`) stay thin: validation + service call.
+  Business logic lives in `app/services`.
+- Database models (`app/models`) are kept separate from the API schemas
+  exposed externally (`app/schemas`); ORM objects are never returned
+  directly as a response.
+- Configuration is read from environment variables in `app/core/config.py`
+  via `pydantic-settings`; constants are not hardcoded in the code.
+- Encryption/decryption logic never runs on the server — the client
+  encodes the ciphertext (which includes the IV/nonce) as a single opaque
+  `encrypted_payload` string and sends it; the server stores this blob
+  transparently and never parses or interprets its contents.
 
-## Geliştirme Komutları
+## Development Commands
 
 ```bash
-# Bağımlılıkları kur
+# Install dependencies
 pip install -r requirements.txt
 
-# Geliştirme sunucusunu başlat
+# Start the dev server
 uvicorn app.main:app --reload
 
-# Testleri çalıştır
+# Run tests
 pytest
 ```
 
-## Notlar
+## Notes
 
-- Yeni endpoint eklerken önce `app/schemas` içinde request/response
-  modelini, sonra `app/services` içinde iş mantığını, en son
-  `app/api` içinde route'u tanımla.
-- Test yazarken `httpx.AsyncClient` ile FastAPI uygulamasına doğrudan
-  istek gönder (gerçek sunucu ayağa kaldırmadan).
+- When adding a new endpoint, first define the request/response model in
+  `app/schemas`, then the business logic in `app/services`, and finally
+  the route in `app/api`.
+- When writing tests, send requests directly to the FastAPI app using
+  `httpx.AsyncClient` (without spinning up a real server).

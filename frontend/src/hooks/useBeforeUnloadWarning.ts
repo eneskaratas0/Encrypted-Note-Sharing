@@ -8,7 +8,7 @@ import { useBlocker } from "react-router-dom";
  * close/refresh (beforeunload).
  */
 const CONFIRM_MESSAGE =
-  "Bu paylaşım linkini henüz kopyalamadınız. Sayfadan ayrılırsanız linke tekrar erişemeyebilirsiniz. Yine de ayrılmak istiyor musunuz?";
+  "You haven't copied this share link yet. If you leave the page, you may not be able to access the link again. Leave anyway?";
 
 export function useBeforeUnloadWarning(shouldWarn: boolean) {
   const blocker = useBlocker(({ currentLocation, nextLocation }) => {

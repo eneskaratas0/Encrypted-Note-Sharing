@@ -12,7 +12,7 @@ interface CopyButtonProps {
   className?: string;
 }
 
-export function CopyButton({ value, label = "Kopyala", onCopied, className }: CopyButtonProps) {
+export function CopyButton({ value, label = "Copy", onCopied, className }: CopyButtonProps) {
   const { copy, status, reset } = useClipboard();
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export function CopyButton({ value, label = "Kopyala", onCopied, className }: Co
       // All copy tiers failed (clipboard API + execCommand) — do not fail
       // silently, since the user may otherwise navigate away thinking the
       // secret link/note was copied.
-      toast.error("Kopyalanamadı. Lütfen metni elle seçip kopyalayın.");
+      toast.error("Couldn't copy. Please select and copy the text manually.");
       const timer = window.setTimeout(reset, 2000);
       return () => window.clearTimeout(timer);
     }
@@ -37,10 +37,10 @@ export function CopyButton({ value, label = "Kopyala", onCopied, className }: Co
       variant="secondary"
       onClick={() => void copy(value)}
       className={cn("gap-1.5", className)}
-      aria-label={status === "copied" ? "Kopyalandı" : label}
+      aria-label={status === "copied" ? "Copied" : label}
     >
       {status === "copied" ? <Check className="size-4" /> : <Copy className="size-4" />}
-      {status === "copied" ? "Kopyalandı" : label}
+      {status === "copied" ? "Copied" : label}
     </Button>
   );
 }

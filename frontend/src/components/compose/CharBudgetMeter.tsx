@@ -15,7 +15,7 @@ export function CharBudgetMeter({ note }: { note: string }) {
         isNearLimit && "text-destructive",
       )}
     >
-      {estimated.toLocaleString()} / {MAX_PAYLOAD_LENGTH.toLocaleString()} bayt (şifreli, tahmini)
+      {estimated.toLocaleString()} / {MAX_PAYLOAD_LENGTH.toLocaleString()} bytes (encrypted, estimated)
     </p>
   );
 }

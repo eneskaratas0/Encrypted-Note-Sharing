@@ -1,31 +1,30 @@
 # Encrypted Note Sharing
 
-Uçtan uca şifrelenmiş, tek kullanımlık veya süreli linklerle paylaşılan not
-paylaşım servisi. Şifreleme ve çözme tamamen tarayıcıda (istemci tarafında)
-yapılır; sunucu yalnızca opak bir şifreli blob saklar ve onu asla ayrıştırmaz
-ya da yorumlamaz.
+A note-sharing service where notes are end-to-end encrypted and shared via
+one-time or time-limited links. Encryption and decryption happen entirely in
+the browser (client-side); the server only stores an opaque encrypted blob
+and never parses or interprets it.
 
-## Nasıl çalışır?
+## How it works
 
-1. Tarayıcı, notu şifrelemek için rastgele bir **AES-GCM 256-bit** anahtar
-   üretir (`frontend/src/lib/crypto.ts`).
-2. Not, `[versiyon][iv][ciphertext+tag]` biçiminde bir "zarf" olarak
-   şifrelenip base64url'e çevrilir ve sunucuya `encrypted_payload` olarak
-   gönderilir.
-3. Şifreleme anahtarı **hiçbir zaman sunucuya gönderilmez** — sadece paylaşım
-   linkinin URL fragment'ında (`/s/<id>#k=<key>`) taşınır. Fragment
-   sunucuya hiç ulaşmaz, yalnızca tarayıcıda kalır.
-4. Alıcı linke gittiğinde tarayıcı `encrypted_payload`'ı sunucudan çeker,
-   fragment'taki anahtarla yerel olarak çözer.
-5. Not; süresi dolduğunda (TTL) veya görüntülenme limitine ulaştığında
-   (`max_views`, varsayılan tek kullanımlık) sunucu tarafından otomatik
-   olarak silinir. Süresi geçmiş kayıtlar periyodik bir arka plan görevi ile
-   temizlenir.
+1. The browser generates a random **AES-GCM 256-bit** key to encrypt the note
+   (`frontend/src/lib/crypto.ts`).
+2. The note is encrypted into an "envelope" of the form
+   `[version][iv][ciphertext+tag]`, converted to base64url, and sent to the
+   server as `encrypted_payload`.
+3. The encryption key is **never sent to the server** — it's only carried in
+   the URL fragment of the share link (`/s/<id>#k=<key>`). The fragment
+   never reaches the server; it stays in the browser only.
+4. When the recipient opens the link, the browser fetches `encrypted_payload`
+   from the server and decrypts it locally using the key from the fragment.
+5. The note is automatically deleted by the server once it expires (TTL) or
+   reaches its view limit (`max_views`, one-time by default). Expired
+   records are cleaned up by a periodic background task.
 
-Sunucu düz metin içeriği asla görmez; yalnızca şifreli veriyi, oluşturulma/son
-geçerlilik zamanını ve görüntülenme sayacını saklar.
+The server never sees the plaintext content; it only stores the encrypted
+data, creation/expiry timestamps, and the view counter.
 
-## Teknoloji Yığını
+## Tech Stack
 
 **Backend**
 - FastAPI + Uvicorn
@@ -37,83 +36,83 @@ geçerlilik zamanını ve görüntülenme sayacını saklar.
 **Frontend**
 - React 19 + TypeScript + Vite
 - React Router, TanStack Query, React Hook Form + Zod
-- Tailwind CSS v4, Radix UI / shadcn bileşenleri
+- Tailwind CSS v4, Radix UI / shadcn components
 - Web Crypto API (AES-GCM)
 
-## Dizin Yapısı
+## Directory Structure
 
 ```
 app/
-  api/        # Route/endpoint tanımları (APIRouter'lar)
-  core/       # Konfigürasyon, veritabanı, rate limit ayarları
-  models/     # SQLAlchemy ORM modelleri
-  schemas/    # Pydantic request/response şemaları
-  services/   # İş mantığı
-tests/        # pytest testleri
-frontend/     # React + Vite istemcisi
+  api/        # Route/endpoint definitions (APIRouters)
+  core/       # Configuration, database, rate limit settings
+  models/     # SQLAlchemy ORM models
+  schemas/    # Pydantic request/response schemas
+  services/   # Business logic
+tests/        # pytest tests
+frontend/     # React + Vite client
 requirements.txt
 ```
 
-## Kurulum
+## Setup
 
 ### Backend
 
 ```bash
 pip install -r requirements.txt
-cp .env.example .env   # gerekirse değerleri düzenleyin
+cp .env.example .env   # edit values if needed
 uvicorn app.main:app --reload
 ```
 
-API varsayılan olarak `http://localhost:8000` üzerinde, `/api/v1` altında
-sunulur. Sağlık kontrolü: `GET /health`.
+The API is served by default at `http://localhost:8000`, under `/api/v1`.
+Health check: `GET /health`.
 
 ### Frontend
 
 ```bash
 cd frontend
 npm install
-cp .env.example .env   # gerekirse VITE_API_BASE_URL'i düzenleyin
+cp .env.example .env   # edit VITE_API_BASE_URL if needed
 npm run dev
 ```
 
-Varsayılan olarak `http://localhost:5173` üzerinde çalışır ve API'ye
-`VITE_API_BASE_URL` (varsayılan `http://localhost:8000`) üzerinden bağlanır.
+Runs by default at `http://localhost:5173` and connects to the API via
+`VITE_API_BASE_URL` (default `http://localhost:8000`).
 
-## Ortam Değişkenleri (Backend)
+## Environment Variables (Backend)
 
-| Değişken | Açıklama | Varsayılan |
+| Variable | Description | Default |
 |---|---|---|
-| `APP_NAME` | Uygulama adı | `Encrypted Note Sharing` |
-| `DATABASE_URL` | Async SQLAlchemy bağlantı dizesi | `sqlite+aiosqlite:///./notes.db` |
-| `DEFAULT_TTL_SECONDS` | Not için varsayılan geçerlilik süresi | `86400` |
-| `DEFAULT_MAX_VIEWS` | Varsayılan maksimum görüntülenme sayısı | `1` |
-| `CLEANUP_INTERVAL_SECONDS` | Süresi dolan notların temizlenme aralığı | `300` |
-| `CORS_ORIGINS` | İzin verilen origin'ler (virgülle ayrılmış) | `http://localhost:3000,http://localhost:5173` |
+| `APP_NAME` | Application name | `Encrypted Note Sharing` |
+| `DATABASE_URL` | Async SQLAlchemy connection string | `sqlite+aiosqlite:///./notes.db` |
+| `DEFAULT_TTL_SECONDS` | Default expiry duration for a note | `86400` |
+| `DEFAULT_MAX_VIEWS` | Default maximum number of views | `1` |
+| `CLEANUP_INTERVAL_SECONDS` | Interval for cleaning up expired notes | `300` |
+| `CORS_ORIGINS` | Allowed origins (comma-separated) | `http://localhost:3000,http://localhost:5173` |
 | `DATABASE_BUSY_TIMEOUT_SECONDS` | SQLite busy timeout | `15.0` |
-| `CREATE_SECRET_RATE_LIMIT` | Not oluşturma endpoint'i için rate limit | `20/minute` |
+| `CREATE_SECRET_RATE_LIMIT` | Rate limit for the note creation endpoint | `20/minute` |
 
 ## API
 
-| Metot | Yol | Açıklama |
+| Method | Path | Description |
 |---|---|---|
-| `POST` | `/api/v1/secrets/` | Şifreli notu oluşturur, `id`, `expires_at`, `max_views` döner |
-| `GET`  | `/api/v1/secrets/{id}` | Notu getirir ve görüntülenme sayacını artırır; limit dolduysa veya süresi geçtiyse `404` döner |
-| `GET`  | `/health` | Sağlık kontrolü |
+| `POST` | `/api/v1/secrets/` | Creates the encrypted note, returns `id`, `expires_at`, `max_views` |
+| `GET`  | `/api/v1/secrets/{id}` | Fetches the note and increments the view counter; returns `404` if the limit is reached or it has expired |
+| `GET`  | `/health` | Health check |
 
-## Testleri Çalıştırma
+## Running Tests
 
 ```bash
 pytest
 ```
 
-Testler `httpx.AsyncClient` ile FastAPI uygulamasına doğrudan istek gönderir,
-ayrı bir sunucu ayağa kaldırmaya gerek yoktur.
+Tests send requests directly to the FastAPI app via `httpx.AsyncClient`;
+no separate server needs to be started.
 
-## Güvenlik Notları
+## Security Notes
 
-- Şifreleme anahtarı asla sunucuya veya HTTP loglarına düşmez; yalnızca
-  paylaşım linkinin URL fragment'ında bulunur.
-- Link'i kim ele geçirirse notu okuyabilir — bu nedenle linki güvenilir
-  kanallardan paylaşın.
-- Notlar varsayılan olarak tek kullanımlıktır; ilk görüntülemeden sonra
-  sunucudan silinir.
+- The encryption key never touches the server or HTTP logs; it only exists
+  in the URL fragment of the share link.
+- Whoever obtains the link can read the note — share it only through
+  trusted channels.
+- Notes are one-time by default; they are deleted from the server after
+  the first view.

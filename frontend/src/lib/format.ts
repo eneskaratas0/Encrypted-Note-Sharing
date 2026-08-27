@@ -13,7 +13,7 @@ function parseApiDate(value: string): Date {
 }
 
 export function formatExpiry(expiresAt: string | null): string {
-  if (!expiresAt) return "Süresiz (görüntülenene kadar geçerli)";
+  if (!expiresAt) return "No expiry (valid until viewed)";
   return parseApiDate(expiresAt).toLocaleString(undefined, {
     dateStyle: "medium",
     timeStyle: "short",
@@ -23,14 +23,14 @@ export function formatExpiry(expiresAt: string | null): string {
 export function formatRelativeTime(expiresAt: string | null): string | null {
   if (!expiresAt) return null;
   const diffMs = parseApiDate(expiresAt).getTime() - Date.now();
-  if (diffMs <= 0) return "süresi doldu";
+  if (diffMs <= 0) return "expired";
 
   const minutes = Math.round(diffMs / 60_000);
-  if (minutes < 60) return `${minutes} dakika içinde`;
+  if (minutes < 60) return `in ${minutes} minutes`;
 
   const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours} saat içinde`;
+  if (hours < 24) return `in ${hours} hours`;
 
   const days = Math.round(hours / 24);
-  return `${days} gün içinde`;
+  return `in ${days} days`;
 }
